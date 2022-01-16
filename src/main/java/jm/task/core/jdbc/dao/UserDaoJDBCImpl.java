@@ -14,16 +14,17 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
+
         try (Connection connection = Util.getConnection()) {
+
             Statement statement = connection.createStatement();
             String SQLrequest = "CREATE TABLE IF NOT EXISTS users " +
-                    "(id BIGINT not NULL, " +
+                    "(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
                     " name VARCHAR(50), " +
                     " lastName VARCHAR (50), " +
-                    " age INTEGER, " +
-                    " PRIMARY KEY (id))";
-
+                    " age TINYINT)";
             statement.executeUpdate(SQLrequest);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -31,10 +32,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Connection connection = Util.getConnection();) {
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement("DROP TABLE IF EXISTS users");
-            preparedStatement.executeUpdate();
+
+        try (Connection connection = Util.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -44,15 +45,15 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
 
         try (Connection connection = Util.getConnection()) {
+
             PreparedStatement preparedStatement =
-                    connection.prepareStatement("INSERT INTO users VALUES(?, ?, ?, ?)");
+                    connection.prepareStatement("INSERT INTO users (name, lastName, age) VALUES(?, ?, ?)");
 
-            preparedStatement.setLong(1, getAllUsers().size()+1);
-            preparedStatement.setString(2, name);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setByte(4, age);
-
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -75,6 +76,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers() {
+
         List<User> allUsers = new ArrayList<>();
         try (Connection connection = Util.getConnection()) {
             Statement statement = connection.createStatement();
